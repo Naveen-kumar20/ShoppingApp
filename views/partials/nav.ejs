@@ -8,18 +8,16 @@
       <span class="navbar-toggler-icon navbar-dark"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <!-- <a class="nav-link active border rounded" aria-current="page" href="/products">Home</a> -->
-        </li>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="flex-direction: row;">
         <% if(currentUser && currentUser.role==='seller' ){%>
-          <li class="nav-item">
-            <a class="nav-link border rounded" style="margin-left: 10px; color: white;" href="/product/new"> Add new
+          <li class="nav-item d-inline-flex">
+            <a class="nav-link border rounded" style="margin-left: 10px;padding: 4px; color: white;font-size: .9rem;"
+              href="/product/new"> Add new
               product </a>
           </li>
           <%}%>
       </ul>
-      <div class="d-flex" role="search">
+      <div class="d-flex mx-3" role="search">
         <% if(!currentUser){ %>
           <a href="/login" class="nav-link mx-2 ">Login</a>
           <% }else{ %>
