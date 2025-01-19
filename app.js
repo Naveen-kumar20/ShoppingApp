@@ -23,7 +23,7 @@ app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 
 app.use(express.static(path.join(__dirname, 'public')))
-app.use(express.urlencoded({extended:true}))
+app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(methodOverride('_method'))
 app.use(flash())
@@ -31,12 +31,12 @@ app.use(session({ //middleware needed to use session.
     secret: 'thisissecretkey', //secret key just like signed key.
     resave: false,
     saveUninitialized: true,
-    cookie: { 
+    cookie: {
         httpOnly: true,
-        expires: Date.now() + 7*24*60*60*1000, //date.now() gives current time(started from 1st jan-1970) in milisecond, and this multiplicated number is 7days in miliseconds, means cookie will expire 7days after from current time.
-        maxAge: 7*24*60*60*1000
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000, //date.now() gives current time(started from 1st jan-1970) in milisecond, and this multiplicated number is 7days in miliseconds, means cookie will expire 7days after from current time.
+        maxAge: 7 * 24 * 60 * 60 * 1000
     }
-  }))
+}))
 
 // PASSPORT
 app.use(passport.initialize())
@@ -47,20 +47,20 @@ passport.deserializeUser(User.deserializeUser());
 
 
 mongoose.connect(process.env.MONGO_CONNECT)
-.then(()=>{
-    console.log("DB CONNECTED SUCCESFULLY");
-})
-.catch((err)=>{
-    console.log("DB NOT CONNECTED");
-    console.log(err);
-})
+    .then(() => {
+        console.log("DB CONNECTED SUCCESFULLY");
+    })
+    .catch((err) => {
+        console.log("DB NOT CONNECTED");
+        console.log(err);
+    })
 
 
-app.use((req,res,next)=>{
+app.use((req, res, next) => {
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
-    
+
     next();
 })
 
@@ -69,14 +69,14 @@ app.use((req,res,next)=>{
 var RazorpayInstance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_DI,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
-  });
+});
 
 //   creating order
-app.post('/create-order', async(req,res)=>{
-    let {TotalAmount} = req.body;
+app.post('/create-order', async (req, res) => {
+    let { TotalAmount } = req.body;
 
     const options = {
-        amount : parseInt(TotalAmount) * 100,
+        amount: parseInt(TotalAmount) * 100,
         currency: 'INR'
     }
 
@@ -108,7 +108,7 @@ app.use(authRouter);
 app.use(cartRouter);
 app.use(wishLIstRouter);
 
-const PORT = 8080;
-app.listen(PORT, ()=>{
+const PORT = process.env.PORT;
+app.listen(PORT, () => {
     console.log(`SERVER CONNECTED AT PORT: ${PORT}`);
 })
