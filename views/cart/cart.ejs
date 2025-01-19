@@ -1,0 +1,133 @@
+<%- include("../partials/header") %>
+    <%- include("../partials/nav") %>
+
+        <div class="row mx-auto mt-3 px-5">
+            <h1 style="font-family: Arial, Helvetica, sans-serif;">My cart</h1>
+            <div class="col-md-8 d-inline-block">
+                <% for(let i of user.cart) { %>
+                    <div class="card mb-3" style="max-width: 540px;">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="<%= i.img %>" class="img-fluid rounded-start" alt="...">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title d-flex justify-content-between">
+                                        <%= i.name %>
+                                            <form action="/user/<%= i._id %>/delete?_method=DELETE" method="POST"
+                                                class="d-inline-block">
+                                                <button type="submit" style="background: none; border: none;">
+                                                    <i class="fa-solid fa-trash-can fa-xs" style="color: #db0000;"></i>
+                                                </button>
+                                            </form>
+                                    </h5>
+                                    <p class="card-text">
+                                        <%= i.desc %>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+            </div>
+            <div class="col-md-4">
+                <% if(user.cart.length) { %>
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-primary" aria-current="true"><strong>Order
+                                details:</strong></li>
+                        <% for(let i of user.cart) { %>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>
+                                    <%= i.name %>:
+                                </span>
+                                <span>&#8377; <%= i.price %></span>
+                            </li>
+                            <% } %>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <strong>Total amount to be paid:</strong>
+                                    <strong>&#8377; <%= TotalAmount %></strong>
+                                </li>
+                                <form id="payment-form">
+                                    <input type="hidden" id="amount" name="amount" value="<%= TotalAmount %>">
+                                    <button class="btn btn-success mt-3" type="button" onclick="payNow()"
+                                        style="width: 100%;">Pay now</button>
+                                </form>
+                    </ul>
+                    <% } %>
+            </div>
+            <div class="d-flex justify-content-center align-items-center">
+                <% if(!user.cart.length){ %>
+                    <!-- <img src="https://cdn-icons-png.flaticon.com/512/11329/11329060.png" style="max-width: 50vw; max-height: 70vh;" alt="empty cart"> -->
+                    <div id="empty-cart-animation" style="width: 300px; height: 300px;"></div>
+                    <% } %>
+            </div>
+
+        </div>
+
+        <!-- empty cart animation -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.11.0/lottie.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                lottie.loadAnimation({
+                    container: document.getElementById('empty-cart-animation'), // Container element
+                    renderer: 'svg', // Renderer type: 'svg', 'canvas', or 'html'
+                    loop: true, // Set to true for infinite looping
+                    autoplay: true, // Start playing automatically
+                    path: '/animations/My_cart_animation.json' // Path to your Lottie JSON file
+                });
+            });
+        </script>
+
+
+        <!-- Razorpay Checkout Script -->
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script>
+            async function payNow() {
+                const amount = document.getElementById('amount').value;
+
+                try {
+                    // Create order on the server
+                    const response = await fetch('/create-order', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ TotalAmount: amount }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to create order');
+                    }
+
+                    const order = await response.json();
+
+                    // Initialize Razorpay Checkout
+                    const options = {
+                        key: '<%= key_id %>', // Use your key_id
+                        amount: order.amount,
+                        currency: order.currency,
+                        name: "Shopping App",
+                        description: "Payment for your order",
+                        order_id: order.id,
+                        handler: function (response) {
+                            alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+                            // Optionally redirect the user or update order status
+                        },
+                        prefill: {
+                            name: "<%= currentUser.username %>", // User's name
+                        },
+                        theme: {
+                            color: "#3399cc",
+                        },
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                } catch (error) {
+                    console.error('Error during payment:', error);
+                    alert('Failed to initiate payment. Please try again.');
+                }
+            }
+        </script>
+
+        <%- include("../partials/footer") %>
