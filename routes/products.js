@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 
 
 //to show all the products.
-router.get('/products', isLoggedIn, async (req, res) => {
+router.get('/products', async (req, res) => {
     try {
         let fetchedProducts = await Product.find({})
         res.render('products/index', { fetchedProducts })

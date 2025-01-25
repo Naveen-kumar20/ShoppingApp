@@ -3,10 +3,10 @@
   <%- include("../partials/nav") %>
     <%- include("../partials/flash") %>
 
-      <div class="card mb-3 mx-auto mt-3" style="max-width: 70%;">
+      <div id="review-page-product-card" class="card mb-3 mx-auto mt-3" style="max-width: 70%;">
         <div class="row g-0">
           <div class="col-lg-4">
-            <img src="<%=foundProduct.img%>" class="img-fluid rounded-start" alt="...">
+            <img id="review-page-product-image" src="<%=foundProduct.img%>" class="img-fluid rounded-start" alt="...">
           </div>
           <div class="col-md-8">
             <div class="card-body">
@@ -34,7 +34,7 @@
 
         <div class="col-lg-7 border-end">
           <h3>Leave a review</h3>
-          <form action="/products/<%=foundProduct._id%>/review" method="POST" autocomplete="off">
+          <form id="review-Input-Form" action="/products/<%=foundProduct._id%>/review" method="POST" autocomplete="off">
             <div>
               <fieldset class="starability-basic">
                 <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="0" checked
@@ -85,6 +85,4 @@
         </div>
 
       </div>
-      <%- include("../partials/pageFooter") %>
-
-        <%- include("../partials/footer") %>
+      <%- include("../partials/footer") %>
